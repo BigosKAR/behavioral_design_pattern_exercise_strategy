@@ -7,4 +7,18 @@ def choose_strategy(kind: str, **kwargs) -> PricingStrategy:
     # Should support: "none", "percent", "bulk", "composite"
     # Each strategy type needs different parameters from **kwargs
     # Return the appropriate strategy instance or raise an error for unknown types
-    pass
+
+
+
+    supported_parameters = {'none', 'percent', 'bulk', 'composite'}
+    if kind in supported_parameters:
+        if kind == 'none':
+            return NoDiscount()
+        elif kind == 'percent':
+            return PercentageDiscount(kwargs['percent'])
+        elif kind == 'bulk':
+            return BulkItemDiscount(kwargs['sku'], kwargs['threshold'], kwargs['per_item_off'])
+        else:
+            return CompositeStrategy([PercentageDiscount(kwargs['percent']), BulkItemDiscount(kwargs['sku'], kwargs['threshold'], kwargs['per_item_off'])])
+    else:
+        raise Exception("The provided strategy is not supported!")

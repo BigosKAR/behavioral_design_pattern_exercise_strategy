@@ -26,12 +26,22 @@ def main() -> None:
 
     items = parse_items(args.items)
     subtotal = compute_subtotal(items)
-    
+
     # TODO: Get the appropriate strategy using choose_strategy function
     # TODO: Apply the strategy to calculate the final total
     # TODO: Display the results (subtotal, strategy used, and final total)
+    options = {}
+
+    for option, value in args.__dict__.items():
+        options[option] = value
     
+    strategy = choose_strategy(args.strategy, **options)
+
+    total = strategy.apply(subtotal, items)
+
+
     print(f"Subtotal: {subtotal:.2f}")
+    print(f"Total: {total:.2f}")
     print(f"Strategy: {args.strategy}")
     # TODO: Calculate and print the final total
 
