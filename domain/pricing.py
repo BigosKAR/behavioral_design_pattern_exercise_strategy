@@ -13,7 +13,10 @@ class LineItem:
 class PricingStrategy(ABC):
     # TODO: Define the common interface for all pricing strategies.
     # This should include a method that takes pricing parameters and returns a calculated value.
-    pass
+
+    @abstractmethod
+    def apply(self, subtotal, items):
+        pass
 
 
 class NoDiscount(PricingStrategy):
