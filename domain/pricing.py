@@ -21,22 +21,40 @@ class PricingStrategy(ABC):
 
 class NoDiscount(PricingStrategy):
     # TODO: Implement a strategy that returns the original value without changes
-    pass
+    def apply(self, subtotal, items):
+        return subtotal
 
 
 class PercentageDiscount(PricingStrategy):
     def __init__(self, percent: float) -> None:
         # TODO: Store the percentage value and validate it's in the correct range
-        pass
+        
+        if percent >= 0 and percent <= 100:
+            self.percent = percent
+        else:
+            print("Incorrect percentage amount!")
+            self.percent = 0
 
     # TODO: Implement the main calculation method that reduces the input by a percentage
+    def apply(self, subtotal, items):
 
+        discounted_subtotal = (1 - self.percent/100)*subtotal
+        return discounted_subtotal
 
 class BulkItemDiscount(PricingStrategy):
     """If any single item's quantity >= threshold, apply a per-item discount for that SKU."""
     def __init__(self, sku: str, threshold: int, per_item_off: float) -> None:
         # TODO: Store the parameters needed to identify items and calculate reductions
-        pass
+        self.sku = sku
+        self.threshold = threshold
+        self.per_item_off = per_item_off
+
+    def apply(self, subtotal, items):
+        for item in items:
+            if item.qty >= self.threshold:
+                subtotal -= item.qty*self.per_item_off
+        
+        return subtotal
 
     # TODO: Implement logic to iterate through items and apply reductions based on quantity thresholds
 
@@ -45,10 +63,14 @@ class CompositeStrategy(PricingStrategy):
     """Compose multiple strategies; apply in order."""
     def __init__(self, strategies: list[PricingStrategy]) -> None:
         # TODO: Store the collection of strategies to be applied sequentially
-        pass
+        self.strategies = strategies
 
     # TODO: Implement method that applies each strategy in sequence, using the output of one as input to the next
+    def apply(self, subtotal, items):
+        for strategy in self.strategies:
+            subtotal = strategy.apply(subtotal, items)
 
+        return subtotal
 
 def compute_subtotal(items: list[LineItem]) -> float:
     return round(sum(it.unit_price * it.qty for it in items), 2)
